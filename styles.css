@@ -1,0 +1,342 @@
+/* Una columna, tarjetas de color suave sobre fondo oscuro. Pensado para el iPhone. */
+:root {
+  --bg: #141219;
+  --ink: #efedf5;
+  --ink-2: #b4b0c4;
+  --ink-3: #807b93;
+
+  /* Tres colores, uno por tarjeta (rosa = Me gustaría, azul = Bandeja, verde = Cumplidas),
+     y cuatro para las barritas de «Me gustaría». Todo lo demás se mezcla a partir de ellos. */
+  /* Los colores de Vero: coral rosado, morado Veritechie (#8B5CF6) y turquesa. */
+  --rosa: #ff6f7d;  --azul: #8b5cf6;  --verde: #2fe0c0;
+  --b1: var(--rosa); --b2: #ff9a8b; --b3: #ff8fb5; --b4: #ffb38a;
+
+  color-scheme: dark;
+}
+
+/* Derivados: no se tocan por paleta */
+:root, :root[data-tema] {
+  --rosa-suave: color-mix(in srgb, var(--rosa) 10%, var(--bg));
+  --rosa-alto:  color-mix(in srgb, var(--rosa) 20%, var(--bg));
+  --rosa-claro: color-mix(in srgb, var(--rosa) 55%, white);
+  --azul-suave: color-mix(in srgb, var(--azul) 10%, var(--bg));
+  --azul-alto:  color-mix(in srgb, var(--azul) 20%, var(--bg));
+  --azul-claro: color-mix(in srgb, var(--azul) 55%, white);
+  --verde-suave: color-mix(in srgb, var(--verde) 10%, var(--bg));
+  --verde-alto:  color-mix(in srgb, var(--verde) 20%, var(--bg));
+  --verde-claro: color-mix(in srgb, var(--verde) 55%, white);
+  --campo: color-mix(in srgb, var(--ink) 6%, var(--bg));
+  --linea: color-mix(in srgb, var(--ink) 14%, var(--bg));
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 17px/1.45 system-ui, -apple-system, "SF Pro Text", "Segoe UI", sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+button, input { font: inherit; color: inherit; }
+button { cursor: pointer; }
+
+.app {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: calc(env(safe-area-inset-top) + 20px) 16px calc(env(safe-area-inset-bottom) + 96px);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.saludo h1 { margin: 0; font-size: 30px; font-weight: 750; letter-spacing: -0.02em; }
+.saludo p { margin: 2px 0 0; color: var(--ink-2); }
+.saludo p::first-letter { text-transform: uppercase; }
+
+/* Contadores */
+.contadores { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.contador {
+  border: 0; border-radius: 16px; padding: 12px 12px 10px; text-align: left;
+  display: flex; flex-direction: column; gap: 2px; font-size: 13px; color: var(--ink-2);
+}
+.contador .num { font-size: 26px; font-weight: 750; line-height: 1.1; }
+.c-gustaria  { background: var(--rosa-suave); }  .c-gustaria .num  { color: var(--rosa); }
+.c-bandeja   { background: var(--azul-suave); }  .c-bandeja .num   { color: var(--azul); }
+.c-cumplidas { background: var(--verde-suave); } .c-cumplidas .num { color: var(--verde); }
+
+/* Apuntar */
+.apuntar { display: flex; flex-direction: column; gap: 8px; }
+.apuntar input[type="text"] {
+  width: 100%; border: 1px solid var(--linea); background: var(--campo); border-radius: 14px;
+  padding: 14px 16px; font-size: 17px; outline: none;
+}
+.apuntar input[type="text"]:focus { border-color: var(--ink-3); }
+.destino { display: flex; gap: 8px; }
+.destino label { position: relative; }
+.destino input { position: absolute; opacity: 0; inset: 0; margin: 0; }
+.destino span {
+  display: inline-block; padding: 5px 12px; border-radius: 999px; font-size: 14px;
+  border: 1px solid var(--linea); color: var(--ink-3);
+}
+.destino input:checked + span { color: var(--bg); background: var(--ink-2); border-color: var(--ink-2); }
+.destino input[value="gustaria"]:checked + span { background: var(--rosa); border-color: var(--rosa); }
+.destino input[value="bandeja"]:checked + span { background: var(--azul); border-color: var(--azul); }
+.destino input:focus-visible + span { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+/* Tarjetas */
+.tarjeta { border-radius: 20px; padding: 16px 16px 10px; }
+.tarjeta h2 { margin: 0; font-size: 19px; font-weight: 700; display: inline; }
+.ayuda { margin: 4px 0 6px; font-size: 13px; color: var(--ink-3); }
+.t-gustaria  { background: var(--rosa-suave); }  .t-gustaria h2  { color: var(--rosa); }
+.t-bandeja   { background: var(--azul-suave); }  .t-bandeja h2   { color: var(--azul); }
+.t-cumplidas { background: var(--verde-suave); } .t-cumplidas h2 { color: var(--verde); }
+.t-cumplidas summary { list-style: none; padding-bottom: 6px; }
+.t-cumplidas summary::-webkit-details-marker { display: none; }
+.t-cumplidas summary::after { content: " ›"; color: var(--ink-3); }
+.t-cumplidas[open] summary::after { content: " ⌄"; }
+
+.lista { list-style: none; margin: 0; padding: 0; }
+.lista li {
+  display: flex; align-items: center; gap: 10px; min-height: 48px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+.lista li:first-child { border-top: 0; }
+.lista .txt { flex: 1; min-width: 0; overflow-wrap: anywhere; padding: 8px 0; }
+.lista .txt input { width: 100%; background: transparent; border: 0; border-bottom: 1px solid var(--ink-3); padding: 2px 0; outline: none; }
+.lista .vacio { color: var(--ink-3); font-size: 14px; font-style: italic; min-height: 40px; }
+.lista .cuando { font-size: 12px; color: var(--ink-3); white-space: nowrap; }
+
+.circulo {
+  flex: none; width: 26px; height: 26px; border-radius: 50%; border: 2px solid currentColor;
+  background: transparent; padding: 0; display: grid; place-items: center; font-size: 13px;
+}
+.t-gustaria .circulo { color: var(--rosa); }
+.t-bandeja .circulo { color: var(--azul); }
+.t-cumplidas .circulo { color: var(--verde); background: var(--verde); }
+.t-cumplidas .circulo::after { content: "✓"; color: var(--bg); font-weight: 800; }
+.t-cumplidas .txt { color: var(--ink-2); }
+
+.acciones { display: flex; gap: 2px; flex: none; }
+.accion {
+  border: 0; background: transparent; color: var(--ink-3); width: 38px; height: 38px;
+  border-radius: 10px; font-size: 18px;
+}
+.accion:active { background: rgba(255, 255, 255, 0.08); }
+.accion.a-gustaria { color: var(--rosa); }
+
+/* Pie y aviso */
+.pie { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; padding-top: 8px; }
+.pie button, .pie .boton {
+  border: 1px solid var(--linea); background: transparent; color: var(--ink-3);
+  border-radius: 999px; padding: 6px 14px; font-size: 14px; cursor: pointer;
+}
+.aviso {
+  position: fixed; left: 16px; right: 16px; bottom: calc(env(safe-area-inset-bottom) + 16px);
+  max-width: 528px; margin: 0 auto; display: flex; align-items: center; gap: 12px;
+  background: color-mix(in srgb, var(--ink) 14%, var(--bg)); color: var(--ink); border-radius: 14px; padding: 12px 14px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
+}
+.aviso[hidden] { display: none; }
+.aviso span { flex: 1; }
+.aviso button { border: 0; background: transparent; color: var(--rosa); font-weight: 700; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .lista li { animation: entra 0.18s ease-out; }
+  @keyframes entra { from { opacity: 0; transform: translateY(-4px); } }
+}
+
+/* ── Versión cuqui: letra redondeada, iconos en círculos, degradados y mini tarjetas ── */
+:root {
+  --redonda: ui-rounded, "SF Pro Rounded", "Nunito", system-ui, -apple-system, sans-serif;
+}
+body { font-family: var(--redonda); background-color: var(--bg); }
+/* Nebulosa de fondo con los tres colores: fija y del tamaño de la pantalla, sea cual sea el ancho. */
+body::before {
+  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(circle at 92% 4%, color-mix(in srgb, var(--rosa) 30%, transparent), transparent min(380px, 70vw)),
+    radial-gradient(circle at 4% 38%, color-mix(in srgb, var(--azul) 32%, transparent), transparent min(420px, 80vw)),
+    radial-gradient(circle at 85% 96%, color-mix(in srgb, var(--verde) 16%, transparent), transparent min(380px, 70vw)),
+    var(--bg);
+}
+.saludo h1 { font-weight: 800; }
+.mano { display: inline-block; transform-origin: 70% 80%; }
+@media (prefers-reduced-motion: no-preference) {
+  .mano { animation: saluda 1.6s ease-in-out 0.4s 2; }
+  @keyframes saluda { 0%,60%,100% { transform: rotate(0); } 15%,45% { transform: rotate(16deg); } 30% { transform: rotate(-8deg); } }
+}
+
+/* Iconos en círculo */
+.badge {
+  flex: none; width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center;
+}
+.badge svg { width: 20px; height: 20px; fill: none; stroke: var(--bg); stroke-width: 2.2; stroke-linejoin: round; stroke-linecap: round; }
+.c-gustaria .badge, .t-gustaria .badge { background: linear-gradient(140deg, var(--rosa-claro), var(--rosa)); }
+.c-bandeja .badge, .t-bandeja .badge { background: linear-gradient(140deg, var(--azul-claro), var(--azul)); }
+.c-cumplidas .badge, .t-cumplidas .badge { background: linear-gradient(140deg, var(--verde-claro), var(--verde)); }
+.c-gustaria .badge svg, .t-gustaria .badge svg, .c-cumplidas .badge svg, .t-cumplidas .badge svg { fill: var(--bg); stroke: none; }
+
+/* Contadores con icono */
+.contador { flex-direction: column; gap: 8px; padding: 12px; border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.05); }
+.contador .cifras { display: flex; flex-direction: column; }
+.c-gustaria  { background: linear-gradient(160deg, var(--rosa-alto), var(--rosa-suave)); }
+.c-bandeja   { background: linear-gradient(160deg, var(--azul-alto), var(--azul-suave)); }
+.c-cumplidas { background: linear-gradient(160deg, var(--verde-alto), var(--verde-suave)); }
+
+/* Campo de apuntar */
+.campo { position: relative; }
+.campo .mas {
+  position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+  width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center;
+  background: linear-gradient(140deg, var(--rosa-claro), var(--rosa)); color: var(--bg); font-weight: 800; font-size: 20px; line-height: 1;
+}
+.apuntar input[type="text"] { padding-left: 50px; border-radius: 18px; background: var(--campo); }
+
+/* Tarjetas con degradado */
+.tarjeta { border-radius: 24px; padding: 16px 14px 12px; border: 1px solid rgba(255, 255, 255, 0.05); }
+.tarjeta h2 { display: flex; align-items: center; gap: 10px; font-weight: 800; }
+.tarjeta h2 .badge { width: 32px; height: 32px; }
+.tarjeta h2 .badge svg { width: 17px; height: 17px; }
+.t-gustaria  { background: linear-gradient(170deg, var(--rosa-alto), var(--rosa-suave) 60%); }
+.t-bandeja   { background: linear-gradient(170deg, var(--azul-alto), var(--azul-suave) 60%); }
+.t-cumplidas { background: linear-gradient(170deg, var(--verde-alto), var(--verde-suave) 60%); }
+.t-cumplidas summary { padding-bottom: 8px; }
+.t-cumplidas summary h2 { display: inline-flex; }
+.ayuda { margin: 6px 0 10px 42px; }
+
+/* Cada cosa, una mini tarjeta con su barrita de color */
+.lista { display: flex; flex-direction: column; gap: 8px; }
+.lista li {
+  border-top: 0; background: rgba(255, 255, 255, 0.045); border-radius: 16px;
+  padding: 4px 4px 4px 12px; position: relative;
+}
+.lista li:not(.vacio)::before {
+  content: ""; position: absolute; left: 0; top: 12px; bottom: 12px; width: 4px; border-radius: 0 4px 4px 0;
+  background: var(--color, var(--ink-3));
+}
+.lista li.vacio { background: transparent; padding-left: 4px; }
+.t-gustaria li:nth-child(4n+1) { --color: var(--b1); }
+.t-gustaria li:nth-child(4n+2) { --color: var(--b2); }
+.t-gustaria li:nth-child(4n+3) { --color: var(--b3); }
+.t-gustaria li:nth-child(4n+4) { --color: var(--b4); }
+.t-bandeja li { --color: var(--azul); }
+.t-cumplidas li { --color: var(--verde); }
+.t-gustaria .circulo { color: var(--color); }
+.circulo { margin-left: 4px; }
+
+/* ── Lo cumplido se ve de un vistazo: círculo relleno con ✓ y texto tachado ── */
+.lista li.hecha { background: rgba(255, 255, 255, 0.02); }
+.lista li.hecha .txt { text-decoration: line-through; text-decoration-thickness: 2px;
+  text-decoration-color: var(--color, var(--ink-3)); color: var(--ink-3); }
+.lista li.hecha .circulo { background: var(--color, currentColor); border-color: var(--color, currentColor); }
+.t-bandeja li.hecha .circulo, .t-cumplidas li .circulo { background: var(--color); border-color: var(--color); }
+.lista li.hecha .circulo::after { content: "✓"; color: var(--bg); font-weight: 900; font-size: 15px; }
+.lista li.hecha::before { opacity: 0.5; }
+@media (prefers-reduced-motion: no-preference) {
+  .lista li.ahora .circulo { animation: pop 0.35s cubic-bezier(.3,1.6,.5,1); }
+  @keyframes pop { 0% { transform: scale(0.6); } 100% { transform: scale(1); } }
+}
+
+/* El morado de marca es oscuro para texto: los títulos y números de Bandeja van en su versión clara. */
+.t-bandeja h2, .c-bandeja .num { color: color-mix(in srgb, var(--azul) 70%, white); }
+.destino input[value="bandeja"]:checked + span { color: #fff; }
+
+/* ── Oscuro («brillo»): tarjetas neutras y el color en el borde, el brillo y los iconos ── */
+:root:not([data-tema="claro"]) .tarjeta,
+:root:not([data-tema="claro"]) .contador { background: #1d1b24; }
+:root:not([data-tema="claro"]) .t-gustaria,  :root:not([data-tema="claro"]) .c-gustaria  { border-color: color-mix(in srgb, var(--rosa) 45%, transparent);  box-shadow: 0 0 28px color-mix(in srgb, var(--rosa) 14%, transparent); }
+:root:not([data-tema="claro"]) .t-bandeja,   :root:not([data-tema="claro"]) .c-bandeja   { border-color: color-mix(in srgb, var(--azul) 55%, transparent);  box-shadow: 0 0 28px color-mix(in srgb, var(--azul) 18%, transparent); }
+:root:not([data-tema="claro"]) .t-cumplidas, :root:not([data-tema="claro"]) .c-cumplidas { border-color: color-mix(in srgb, var(--verde) 45%, transparent); box-shadow: 0 0 28px color-mix(in srgb, var(--verde) 12%, transparent); }
+
+/* ── Claro («pastel»): el fondo sigue oscuro; las tarjetas pasan a pastel con letra oscura ── */
+:root[data-tema="claro"] .destino input[value="gustaria"]:checked + span { color: #1d1622; }
+:root[data-tema="claro"] .t-gustaria,  :root[data-tema="claro"] .c-gustaria  { --fondo: color-mix(in srgb, var(--rosa) 72%, white); }
+:root[data-tema="claro"] .t-bandeja,   :root[data-tema="claro"] .c-bandeja   { --fondo: color-mix(in srgb, var(--azul) 45%, white); }
+:root[data-tema="claro"] .t-cumplidas, :root[data-tema="claro"] .c-cumplidas { --fondo: color-mix(in srgb, var(--verde) 60%, white); }
+:root[data-tema="claro"] .tarjeta,
+:root[data-tema="claro"] .contador { background: var(--fondo); color: #1d1622; border: 0; }
+:root[data-tema="claro"] .tarjeta h2,
+:root[data-tema="claro"] .contador .num,
+:root[data-tema="claro"] .t-bandeja h2,
+:root[data-tema="claro"] .c-bandeja .num { color: #1d1622; }
+:root[data-tema="claro"] .contador,
+:root[data-tema="claro"] .tarjeta .ayuda { color: rgba(29, 22, 34, 0.68); }
+:root[data-tema="claro"] .badge { background: #1d1622 !important; }
+:root[data-tema="claro"] .badge svg { stroke: var(--fondo); }
+:root[data-tema="claro"] .c-gustaria .badge svg, :root[data-tema="claro"] .t-gustaria .badge svg,
+:root[data-tema="claro"] .c-cumplidas .badge svg, :root[data-tema="claro"] .t-cumplidas .badge svg { fill: var(--fondo); stroke: none; }
+:root[data-tema="claro"] .lista li { background: rgba(255, 255, 255, 0.42); }
+:root[data-tema="claro"] .lista li.vacio { background: transparent; }
+:root[data-tema="claro"] .lista li::before { background: #1d1622; opacity: 0.25; }
+:root[data-tema="claro"] .lista .txt { color: #1d1622; }
+:root[data-tema="claro"] .lista li.hecha .txt { color: rgba(29, 22, 34, 0.5); text-decoration-color: #1d1622; }
+:root[data-tema="claro"] .circulo { color: #1d1622 !important; }
+:root[data-tema="claro"] .lista li.hecha .circulo { background: #1d1622; border-color: #1d1622; }
+:root[data-tema="claro"] .lista li.hecha .circulo::after { color: var(--fondo); }
+:root[data-tema="claro"] .accion { color: rgba(29, 22, 34, 0.55); }
+:root[data-tema="claro"] .accion.a-gustaria { color: #1d1622; }
+:root[data-tema="claro"] .lista .cuando { color: rgba(29, 22, 34, 0.6); }
+
+/* ── Sol y luna ── */
+.saludo { position: relative; padding-right: 64px; }
+.tema {
+  position: absolute; top: 0; right: 0; width: 52px; height: 52px; border-radius: 50%; border: 0;
+  display: grid; place-items: center; overflow: hidden;
+  background: radial-gradient(circle at 30% 30%, #2b2440, #17131f);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--azul) 45%, transparent), 0 0 24px color-mix(in srgb, var(--azul) 35%, transparent);
+  transition: background 0.5s, box-shadow 0.5s;
+}
+:root[data-tema="claro"] .tema {
+  background: radial-gradient(circle at 30% 30%, #fff1d6, #ffd1a8);
+  box-shadow: 0 0 0 1px rgba(255, 170, 90, 0.5), 0 0 26px rgba(255, 170, 90, 0.55);
+}
+.tema svg { position: absolute; width: 28px; height: 28px; transition: transform 0.6s cubic-bezier(.5,1.6,.4,1), opacity 0.35s; }
+.tema .luna { fill: #e9ddff; filter: drop-shadow(0 0 6px rgba(200, 180, 255, 0.8)); }
+.tema .sol { fill: #ffb347; stroke: #ffb347; stroke-width: 2.4; stroke-linecap: round; filter: drop-shadow(0 0 6px rgba(255, 170, 60, 0.8)); }
+.tema .estrellita { position: absolute; width: 3px; height: 3px; border-radius: 50%; background: #fff; opacity: 0.8; transition: opacity 0.4s, transform 0.6s; }
+.tema .e1 { top: 12px; left: 13px; } .tema .e2 { top: 34px; left: 10px; width: 2px; height: 2px; } .tema .e3 { top: 15px; right: 11px; width: 2px; height: 2px; }
+:root:not([data-tema="claro"]) .tema .sol { transform: rotate(-120deg) scale(0.3); opacity: 0; }
+:root[data-tema="claro"] .tema .luna { transform: rotate(120deg) translateY(30px) scale(0.5); opacity: 0; }
+:root[data-tema="claro"] .tema .estrellita { opacity: 0; transform: scale(0); }
+@media (prefers-reduced-motion: no-preference) {
+  :root[data-tema="claro"] .tema .sol { animation: gira 14s linear infinite; }
+  @keyframes gira { to { transform: rotate(360deg); } }
+  :root:not([data-tema="claro"]) .tema .estrellita { animation: titila 2.4s ease-in-out infinite; }
+  .tema .e2 { animation-delay: 0.8s !important; } .tema .e3 { animation-delay: 1.5s !important; }
+  @keyframes titila { 50% { opacity: 0.15; } }
+  body { transition: background-color 0.5s, color 0.5s; }
+  .tarjeta, .contador { transition: background 0.5s, border-color 0.5s, box-shadow 0.5s, color 0.5s; }
+}
+
+/* ── Contadores compactos: icono y número, sin texto (el color y el icono ya lo dicen) ── */
+.contador { flex-direction: row; align-items: center; justify-content: center; gap: 10px; padding: 8px 10px; border-radius: 18px; }
+.contador .badge { width: 32px; height: 32px; }
+.contador .badge svg { width: 17px; height: 17px; }
+.contador .cifras > span:not(.num) {
+  position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+}
+.contador .num { font-size: 24px; }
+
+/* Cumplidas: siempre abierta, con la fecha y «ver todas» */
+.t-cumplidas h2 { margin-bottom: 10px; }
+.lista .cuando { font-size: 13px; font-weight: 600; padding: 0 2px; }
+.ver-todas { display: block; margin: 10px auto 2px; border: 0; background: transparent; color: var(--ink-3); font-size: 14px; font-weight: 600; }
+.ver-todas[hidden] { display: none; }
+:root[data-tema="claro"] .ver-todas { color: rgba(29, 22, 34, 0.65); }
+
+/* El + del campo es el botón de guardar (en el iPhone también vale «OK» en el teclado) */
+.campo .mas { border: 0; padding: 0; cursor: pointer; }
+.campo .mas:active { transform: translateY(-50%) scale(0.9); }
+
+/* Tarjetas plegables: se toca el título */
+[data-plegable] h2 { cursor: pointer; user-select: none; -webkit-user-select: none; }
+[data-plegable] h2 .flecha {
+  margin-left: auto; width: 10px; height: 10px; border-right: 2.5px solid currentColor; border-bottom: 2.5px solid currentColor;
+  transform: rotate(45deg) translate(-3px, -3px); opacity: 0.7; transition: transform 0.25s;
+}
+[data-plegable].plegada h2 .flecha { transform: rotate(-45deg); }
+[data-plegable].plegada { padding-bottom: 16px; }
+[data-plegable].plegada .ayuda, [data-plegable].plegada .lista, [data-plegable].plegada .ver-todas { display: none; }
+.t-cumplidas.plegada h2 { margin-bottom: 0; }

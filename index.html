@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#131218" />
+    <meta name="color-scheme" content="dark light" />
+    <title>VeriNotas</title>
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="VeriNotas" />
+    <link rel="apple-touch-icon" href="./icon-180.png" />
+    <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+    <!-- El tema se decide antes del primer pintado, para que no parpadee. Misma clave que app.js. -->
+    <script>
+      (function () {
+        var tema = 'auto';
+        try { tema = localStorage.getItem('verinotas.v1.tema') || 'auto'; } catch (e) {}
+        var t = new URLSearchParams(location.search).get('tema') || tema;
+        if (t !== 'claro' && t !== 'oscuro') t = matchMedia('(prefers-color-scheme: light)').matches ? 'claro' : 'oscuro';
+        document.documentElement.dataset.tema = t;
+        document.querySelector('meta[name="theme-color"]').setAttribute('content', '#141219');
+      })();
+    </script>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app">
+      <header class="saludo">
+        <h1>Hola, Vero <span class="mano" aria-hidden="true">👋</span></h1>
+        <p id="fecha"></p>
+        <button type="button" class="tema" id="tema" aria-label="Cambiar a modo claro">
+          <span class="estrellita e1"></span><span class="estrellita e2"></span><span class="estrellita e3"></span>
+          <svg class="luna" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>
+          <svg class="sol" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6" fill="none"/></svg>
+        </button>
+      </header>
+
+      <section class="contadores" aria-label="Resumen">
+        <button class="contador c-gustaria" data-ir="gustaria">
+          <span class="badge"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.2 5.6L20 9.3l-4.4 3.9L17 19l-5-3-5 3 1.4-5.8L4 9.3l5.8-.7z"/></svg></span><span class="cifras"><span class="num" id="n-gustaria">0</span><span>Me gustaría</span></span>
+        </button>
+        <button class="contador c-bandeja" data-ir="bandeja">
+          <span class="badge"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13l2.5-7h11L20 13v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"/><path d="M4 13h4.5l1 2h5l1-2H20"/></svg></span><span class="cifras"><span class="num" id="n-bandeja">0</span><span>Pendientes</span></span>
+        </button>
+        <button class="contador c-cumplidas" data-ir="cumplidas">
+          <span class="badge"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></span><span class="cifras"><span class="num" id="n-cumplidas">0</span><span>Cumplidas</span></span>
+        </button>
+      </section>
+
+      <form id="apuntar" class="apuntar" autocomplete="off">
+        <div class="campo"><button type="submit" class="mas" aria-label="Apuntar">+</button>
+        <input id="texto" name="texto" type="text" placeholder="Apunta algo…" enterkeyhint="done" aria-label="Apunta algo" /></div>
+        <div class="destino" role="radiogroup" aria-label="¿Dónde va?">
+          <label><input type="radio" name="lista" value="bandeja" checked /><span>Pendientes</span></label>
+          <label><input type="radio" name="lista" value="gustaria" /><span>Me gustaría</span></label>
+        </div>
+      </form>
+
+      <section class="tarjeta t-gustaria" id="gustaria" data-plegable>
+        <h2><span class="badge"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.2 5.6L20 9.3l-4.4 3.9L17 19l-5-3-5 3 1.4-5.8L4 9.3l5.8-.7z"/></svg></span>Me gustaría</h2>
+        <p class="ayuda">Lo que te apetece hacer, sin fecha ni prisa.</p>
+        <ul class="lista" data-lista="gustaria"></ul>
+      </section>
+
+      <section class="tarjeta t-bandeja" id="bandeja" data-plegable data-recordar>
+        <h2><span class="badge"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13l2.5-7h11L20 13v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"/><path d="M4 13h4.5l1 2h5l1-2H20"/></svg></span>Pendientes</h2>
+        <p class="ayuda">¡Decide! ✦ a «Me gustaría», ✓ hecho o × fuera.</p>
+        <ul class="lista" data-lista="bandeja"></ul>
+      </section>
+
+      <section class="tarjeta t-cumplidas" id="cumplidas" data-plegable data-recordar>
+        <h2><span class="badge"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></span>Cumplidas</h2>
+        <ul class="lista" data-lista="cumplidas"></ul>
+        <button type="button" class="ver-todas" id="ver-todas" hidden></button>
+      </section>
+
+      <footer class="pie">
+        <button type="button" id="exportar">Guardar copia</button>
+        <label class="boton">Recuperar copia<input type="file" id="importar" accept="application/json,.json" hidden /></label>
+      </footer>
+    </main>
+
+    <div id="aviso" class="aviso" role="status" aria-live="polite" hidden>
+      <span id="aviso-texto"></span>
+      <button type="button" id="deshacer">Deshacer</button>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

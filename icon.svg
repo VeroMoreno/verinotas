@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="fondo" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2a1a52"/>
+      <stop offset="0.55" stop-color="#1a1230"/>
+      <stop offset="1" stop-color="#140f22"/>
+    </linearGradient>
+    <radialGradient id="morado" cx="0.18" cy="0.2" r="0.6">
+      <stop offset="0" stop-color="#8b5cf6" stop-opacity="0.85"/>
+      <stop offset="1" stop-color="#8b5cf6" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="coral" cx="0.9" cy="0.85" r="0.6">
+      <stop offset="0" stop-color="#ff6f7d" stop-opacity="0.75"/>
+      <stop offset="1" stop-color="#ff6f7d" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="agua" cx="0.95" cy="0.1" r="0.35">
+      <stop offset="0" stop-color="#2fe0c0" stop-opacity="0.45"/>
+      <stop offset="1" stop-color="#2fe0c0" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="halo" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#ffd9e6" stop-opacity="0.75"/>
+      <stop offset="0.45" stop-color="#ff9ab8" stop-opacity="0.25"/>
+      <stop offset="1" stop-color="#ff9ab8" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="estrella" x1="0.2" y1="0.1" x2="0.8" y2="0.95">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="0.45" stop-color="#ffd1e0"/>
+      <stop offset="1" stop-color="#ff8fa8"/>
+    </linearGradient>
+    <linearGradient id="peque" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#9ff3e2"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#fondo)"/>
+  <rect width="512" height="512" fill="url(#morado)"/>
+  <rect width="512" height="512" fill="url(#coral)"/>
+  <rect width="512" height="512" fill="url(#agua)"/>
+  <circle cx="238" cy="270" r="200" fill="url(#halo)"/>
+  <!-- Estrella grande de cuatro puntas, con las curvas hacia dentro -->
+  <path d="M238 96 C252 210 262 240 382 270 C262 300 252 330 238 444 C224 330 214 300 94 270 C214 240 224 210 238 96 Z" fill="url(#estrella)"/>
+  <!-- Estrellita turquesa -->
+  <path d="M378 104 C383 140 388 146 420 152 C388 158 383 164 378 200 C373 164 368 158 336 152 C368 146 373 140 378 104 Z" fill="url(#peque)"/>
+  <!-- Puntitos -->
+  <circle cx="130" cy="130" r="7" fill="#ffffff" opacity="0.8"/>
+  <circle cx="405" cy="395" r="5" fill="#ffffff" opacity="0.6"/>
+  <circle cx="100" cy="410" r="4" fill="#ffffff" opacity="0.5"/>
+</svg>

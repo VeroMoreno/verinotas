@@ -1,6 +1,6 @@
 // La app es estática y sus datos viven en localStorage: funciona sin conexión.
 // Se sirve lo cacheado y se refresca por detrás.
-const CACHE = 'verinotas-v1';
+const CACHE = 'verinotas-v2';
 
 self.addEventListener('install', () => self.skipWaiting());
 

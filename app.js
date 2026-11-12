@@ -105,8 +105,10 @@
   function fila(c) {
     const li = document.createElement('li');
     const cumplida = Boolean(c.cumplida);
+    li.dataset.id = c.id;
     if (cumplida) li.className = 'hecha';
     if (c.id === recienHecha) li.classList.add('ahora');
+    if (!cumplida) li.append(asa(li));
 
     // Al cumplirla se ve tachada un momento en su sitio y luego pasa a Cumplidas.
     li.append(boton('circulo', '', cumplida ? 'Volver a pendiente' : 'Marcar como hecha', (e) => {
@@ -146,6 +148,91 @@
       cambiar('Quitada', () => { cosas = cosas.filter((x) => x.id !== c.id); })));
     li.append(acciones);
     return li;
+  }
+
+  // ── Arrastrar para ordenar (Me gustaría y Pendientes) ──
+  // Con el dedo o el ratón desde el asa ⠿; con el teclado, flechas arriba y abajo sobre el asa.
+  const ICONO_ASA = '<svg viewBox="0 0 10 16" aria-hidden="true"><circle cx="2.5" cy="3" r="1.5"/><circle cx="7.5" cy="3" r="1.5"/><circle cx="2.5" cy="8" r="1.5"/><circle cx="7.5" cy="8" r="1.5"/><circle cx="2.5" cy="13" r="1.5"/><circle cx="7.5" cy="13" r="1.5"/></svg>';
+
+  function asa(li) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'asa';
+    b.setAttribute('aria-label', 'Mover (flechas arriba y abajo)');
+    b.innerHTML = ICONO_ASA;
+    b.addEventListener('pointerdown', (e) => empezarArrastre(e, li));
+    b.addEventListener('keydown', (e) => {
+      if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return;
+      e.preventDefault();
+      const otro = e.key === 'ArrowUp' ? li.previousElementSibling : li.nextElementSibling;
+      if (!otro) return;
+      li.parentElement.insertBefore(li, e.key === 'ArrowUp' ? otro : otro.nextElementSibling);
+      guardarOrden(li.parentElement, li.dataset.id);
+    });
+    return b;
+  }
+
+  function empezarArrastre(e, li) {
+    if (e.button !== 0) return;
+    e.preventDefault();
+    const ul = li.parentElement;
+    const asaEl = e.currentTarget;
+    const arriba = li.getBoundingClientRect().top;
+    const agarre = e.clientY - arriba;
+    let y = e.clientY;
+    let auto = 0;
+    try { asaEl.setPointerCapture(e.pointerId); } catch {}
+    li.classList.add('arrastrando');
+    document.body.classList.add('moviendo');
+
+    const colocar = () => {
+      // Se recoloca en el hueco que le toca y se dibuja pegado al dedo.
+      const otros = [...ul.children].filter((x) => x !== li);
+      const antes = otros.find((x) => {
+        const r = x.getBoundingClientRect();
+        return y < r.top + r.height / 2;
+      });
+      if (antes) { if (li.nextElementSibling !== antes) ul.insertBefore(li, antes); }
+      else if (ul.lastElementChild !== li) ul.append(li);
+      li.style.transform = '';
+      const natural = li.getBoundingClientRect().top;
+      li.style.transform = `translateY(${y - agarre - natural}px)`;
+    };
+    const desplazar = () => {
+      const borde = 70;
+      const paso = y < borde ? -10 : y > innerHeight - borde ? 10 : 0;
+      if (paso) { scrollBy(0, paso); colocar(); }
+      auto = requestAnimationFrame(desplazar);
+    };
+    const mover = (ev) => { y = ev.clientY; colocar(); };
+    const soltar = () => {
+      cancelAnimationFrame(auto);
+      asaEl.removeEventListener('pointermove', mover);
+      asaEl.removeEventListener('pointerup', soltar);
+      asaEl.removeEventListener('pointercancel', soltar);
+      li.style.transform = '';
+      li.classList.remove('arrastrando');
+      document.body.classList.remove('moviendo');
+      guardarOrden(ul);
+    };
+    asaEl.addEventListener('pointermove', mover);
+    asaEl.addEventListener('pointerup', soltar);
+    asaEl.addEventListener('pointercancel', soltar);
+    auto = requestAnimationFrame(desplazar);
+  }
+
+  // El orden de la lista en pantalla pasa a ser el orden guardado.
+  function guardarOrden(ul, enfocar) {
+    const ids = [...ul.children].map((x) => x.dataset.id).filter(Boolean);
+    const porId = new Map(cosas.map((c) => [c.id, c]));
+    const enLista = new Set(ids);
+    let i = 0;
+    const nuevo = cosas.map((c) => (enLista.has(c.id) ? porId.get(ids[i++]) : c));
+    if (nuevo.every((c, k) => c === cosas[k])) return;
+    cosas = nuevo;
+    guardar();
+    pintar();
+    if (enfocar) document.querySelector(`[data-id="${enfocar}"] .asa`)?.focus();
   }
 
   function editar(txt, c) {
@@ -301,6 +388,49 @@
     pintarTema();
   });
   pintarTema();
+
+  // ── El nombre del saludo: lo pone cada persona en su móvil; sin nombre, «¡Hola!» ──
+  const CLAVE_NOMBRE = 'verinotas.v1.nombre';
+  let nombre = '';
+  try { nombre = DEMO ? '' : localStorage.getItem(CLAVE_NOMBRE) || ''; } catch {}
+
+  function pintarNombre() {
+    $('#hola').textContent = nombre ? `Hola, ${nombre}` : '¡Hola!';
+    $('#pista').hidden = Boolean(nombre);
+  }
+
+  function editarNombre() {
+    const hola = $('#hola');
+    if (hola.querySelector('input')) return;
+    const input = document.createElement('input');
+    input.value = nombre;
+    input.placeholder = 'Tu nombre';
+    input.maxLength = 24;
+    input.enterKeyHint = 'done';
+    input.setAttribute('aria-label', 'Tu nombre');
+    hola.textContent = 'Hola, ';
+    hola.append(input);
+    input.focus();
+    let hecho = false;
+    const terminar = () => {
+      if (hecho) return;
+      hecho = true;
+      nombre = input.value.trim();
+      try { if (!DEMO) localStorage.setItem(CLAVE_NOMBRE, nombre); } catch {}
+      pintarNombre();
+    };
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === 'Escape') { e.preventDefault(); terminar(); }
+    });
+    input.addEventListener('blur', terminar);
+  }
+
+  $('#hola').addEventListener('click', editarNombre);
+  $('#hola').addEventListener('keydown', (e) => {
+    if (e.target !== e.currentTarget) return; // el Enter del propio campo no lo vuelve a abrir
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); editarNombre(); }
+  });
+  pintarNombre();
 
   $('#fecha').textContent = new Date().toLocaleDateString('es-ES', {
     weekday: 'long', day: 'numeric', month: 'long',

@@ -340,3 +340,31 @@ body::before {
 [data-plegable].plegada { padding-bottom: 16px; }
 [data-plegable].plegada .ayuda, [data-plegable].plegada .lista, [data-plegable].plegada .ver-todas { display: none; }
 .t-cumplidas.plegada h2 { margin-bottom: 0; }
+
+/* ── Saludo con nombre ── */
+.hola { cursor: pointer; border-radius: 8px; }
+.hola:focus-visible { outline: 2px solid var(--ink-3); outline-offset: 3px; }
+.hola input {
+  font: inherit; color: inherit; background: transparent; border: 0; border-bottom: 2px solid var(--rosa);
+  width: 6.5em; padding: 0; outline: none; letter-spacing: inherit;
+}
+.saludo .pista { font-size: 13px; color: var(--ink-3); margin-top: 2px; }
+.saludo .pista::first-letter { text-transform: none; }
+
+/* ── Asa para arrastrar ── */
+.lista li { padding-left: 6px; }
+.asa {
+  flex: none; width: 24px; height: 40px; margin-right: -4px; border: 0; padding: 0; background: transparent;
+  display: grid; place-items: center; color: var(--ink-3); cursor: grab; touch-action: none; border-radius: 8px;
+}
+.asa svg { width: 9px; height: 15px; fill: currentColor; opacity: 0.7; }
+.asa:focus-visible { outline: 2px solid var(--ink-3); }
+.lista li.hecha, .lista li.vacio { padding-left: 12px; }
+.lista li.arrastrando {
+  z-index: 5; cursor: grabbing; animation: none;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45), 0 0 0 1.5px var(--color, var(--ink-3));
+  background: color-mix(in srgb, var(--color, var(--ink-3)) 18%, #1d1b24);
+}
+body.moviendo { cursor: grabbing; user-select: none; -webkit-user-select: none; }
+:root[data-tema="claro"] .asa { color: rgba(29, 22, 34, 0.5); }
+:root[data-tema="claro"] .lista li.arrastrando { background: rgba(255, 255, 255, 0.75); box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35); }
